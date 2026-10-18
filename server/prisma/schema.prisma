@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Card {
+  id              String  @id
+  slug            String  @unique
+  templateId      String
+  recipientName   String
+  senderName      String?
+  message         String?
+  photoUrl        String?
+  photoFrameStyle String?
+  photoCaption    String?
+  musicConfig     Json?
+  views           Int     @default(0)
+  createdAt       String
+  updatedAt       String
+
+  @@index([createdAt(sort: Desc)], map: "idx_cards_created")
+  @@map("cards")
+}
+
+model Category {
+  id        String  @id
+  label     String
+  labelEn   String?
+  icon      String?
+  sortOrder Int     @default(0)
+
+  @@map("categories")
+}
+
+model Template {
+  id      String @id
+  payload Json
+
+  @@map("templates")
+}
+
+model MusicTrack {
+  id      String @id
+  payload Json
+
+  @@map("music_tracks")
+}
+
+model AdminUser {
+  id           String         @id
+  username     String         @unique
+  passwordHash String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  sessions     AdminSession[]
+
+  @@map("admin_users")
+}
+
+model AdminSession {
+  id        String    @id
+  token     String    @unique
+  userId    String
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  @@index([expiresAt])
+  @@map("admin_sessions")
+}

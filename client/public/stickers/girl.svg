@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0f7fa"/><stop offset="1" stop-color="#fce4ec"/></linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <path d="M85 230 C70 110 140 60 200 60 C260 60 330 110 315 230 L330 380 L70 380 Z" fill="#4e342e"/>
+  <rect x="160" y="300" width="80" height="80" fill="#ffe0cc"/>
+  <path d="M110 380 C120 330 160 315 200 315 C240 315 280 330 290 380Z" fill="#ff8fb8"/>
+  <ellipse cx="200" cy="215" rx="95" ry="105" fill="#ffe7d6" stroke="#4e342e" stroke-width="5"/>
+  <path d="M105 190 C120 110 180 95 230 120 C250 140 290 150 298 195 C270 160 230 160 200 140 C180 165 140 175 105 190Z" fill="#4e342e"/>
+  <path d="M148 225 q14 -14 28 0" fill="none" stroke="#3a2214" stroke-width="7" stroke-linecap="round"/>
+  <path d="M224 225 q14 -14 28 0" fill="none" stroke="#3a2214" stroke-width="7" stroke-linecap="round"/>
+  <ellipse cx="140" cy="258" rx="20" ry="11" fill="#ff9eb5" opacity=".75"/><ellipse cx="260" cy="258" rx="20" ry="11" fill="#ff9eb5" opacity=".75"/>
+  <path d="M182 268 q18 20 36 0" fill="#e85d84" stroke="#3a2214" stroke-width="4" stroke-linejoin="round"/>
+  <g transform="translate(275 115)">
+    <g fill="#ff6fa5"><ellipse cx="0" cy="-22" rx="13" ry="20"/><ellipse cx="0" cy="-22" rx="13" ry="20" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="13" ry="20" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="13" ry="20" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="13" ry="20" transform="rotate(288)"/></g>
+    <circle r="12" fill="#ffd54f"/>
+  </g>
+  <g transform="translate(240 95) scale(.55)">
+    <g fill="#ffc1d8"><ellipse cx="0" cy="-22" rx="13" ry="20"/><ellipse cx="0" cy="-22" rx="13" ry="20" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="13" ry="20" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="13" ry="20" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="13" ry="20" transform="rotate(288)"/></g>
+    <circle r="12" fill="#fff59d"/>
+  </g>
+</svg>
