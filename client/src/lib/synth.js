@@ -174,6 +174,7 @@ export class SynthEngine {
     this.stop();
     const track = TRACKS[trackId] || TRACKS['piano-youth'];
     const { ctx } = this;
+    const gen = this.generation;
     const bus = ctx.createGain();
     bus.gain.setValueAtTime(0, ctx.currentTime);
     bus.gain.linearRampToValueAtTime(1, ctx.currentTime + 1.2);
@@ -199,18 +200,46 @@ export class SynthEngine {
     this.track = track;
     this.bar = 0;
     this.nextBarTime = ctx.currentTime + 0.12;
+    const totalBars = track.chords.length;
+    const barDur = track.beatsPerBar * (60 / track.bpm);
+    let finished = false;
+    const finish = () => {
+      if (finished || this.generation !== gen) return;
+      finished = true;
+      if (this.timer) clearInterval(this.timer);
+      this.timer = null;
+      const now = ctx.currentTime;
+      const fadeStart = Math.max(now, this.nextBarTime);
+      const fade = 2.2;
+      bus.gain.cancelScheduledValues(now);
+      bus.gain.setValueAtTime(bus.gain.value, now);
+      bus.gain.setValueAtTime(bus.gain.value, fadeStart);
+      bus.gain.linearRampToValueAtTime(0, fadeStart + fade);
+      const snap = this.bus;
+      const wait = (fadeStart - now + fade) * 1000 + 200;
+      setTimeout(() => {
+        if (this.generation !== gen) return;
+        if (this.bus === snap) this.bus = null;
+        snap?.sources.forEach((s) => { try { s.stop(); } catch { /* already stopped */ } });
+        try { snap?.bus.disconnect(); } catch { /* already disconnected */ }
+        this.onEnded?.();
+      }, wait);
+    };
     const tick = () => {
-      while (this.nextBarTime < ctx.currentTime + 1.5) {
+      if (this.generation !== gen) return;
+      while (this.bar < totalBars && this.nextBarTime < ctx.currentTime + 1.5) {
         this.scheduleBar(this.bar, this.nextBarTime);
-        this.nextBarTime += track.beatsPerBar * (60 / track.bpm);
+        this.nextBarTime += barDur;
         this.bar++;
       }
+      if (this.bar >= totalBars) finish();
     };
     tick();
     this.timer = setInterval(tick, 120);
   }
 
   stop(fade = 0.5) {
+    this.generation = (this.generation || 0) + 1;
     if (this.timer) clearInterval(this.timer);
     this.timer = null;
     const old = this.bus;
@@ -222,7 +251,7 @@ export class SynthEngine {
     old.bus.gain.linearRampToValueAtTime(0, t + fade);
     setTimeout(() => {
       old.sources.forEach((s) => { try { s.stop(); } catch { /* already stopped */ } });
-      old.bus.disconnect();
+      try { old.bus.disconnect(); } catch { /* already disconnected */ }
     }, fade * 1000 + 200);
   }
 

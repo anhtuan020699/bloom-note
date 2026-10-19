@@ -842,7 +842,10 @@ export default function Shop() {
 
   useEffect(() => {
     api.catalog().then((data) => {
-      if (data.templates?.length) setTemplates(data.templates);
+      if (data.templates?.length) {
+        const ids = new Set(data.templates.map((t) => t.id));
+        setTemplates([...data.templates, ...TEMPLATES.filter((t) => !ids.has(t.id))]);
+      }
       if (data.categories?.length) setCategories(data.categories);
     }).catch(() => {});
   }, []);

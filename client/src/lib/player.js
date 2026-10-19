@@ -37,29 +37,40 @@ class MusicPlayer {
     return config.source === 'library' ? `lib:${config.trackId}` : `url:${config.url}`;
   }
 
-  /** Call directly from a click/tap handler. */
+  /** Call directly from a click/tap handler. Same track already playing is left alone. */
   play(config) {
     const key = MusicPlayer.keyOf(config);
+    if (!key) {
+      this.stop();
+      return;
+    }
+    if (this.state.playing && this.state.key === key) return;
     this.stop();
-    if (!key) return;
     this.set({ key, error: null, playing: true });
 
     if (config.source === 'library') {
       this.ensureContext();
+      this.synth.onEnded = () => {
+        if (this.state.key === key) this.set({ playing: false });
+      };
       this.synth.start(config.trackId);
       return;
     }
 
     if (!this.audio) {
       this.audio = new Audio();
-      this.audio.loop = true;
+      this.audio.loop = false;
       this.audio.preload = 'auto';
       this.audio.addEventListener('error', () => {
         if (this.state.key?.startsWith('url:')) {
           this.set({ playing: false, error: 'Không phát được nhạc từ link này.' });
         }
       });
+      this.audio.addEventListener('ended', () => {
+        if (this.state.key?.startsWith('url:')) this.set({ playing: false });
+      });
     }
+    this.audio.loop = false;
     this.audio.src = config.url;
     this.audio.muted = this.state.muted;
     this.audio.currentTime = 0;

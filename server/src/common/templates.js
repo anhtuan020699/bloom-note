@@ -79,6 +79,32 @@ const TEMPLATES = [
       center: '#ffca28',
     },
     defaultMusicId: 'piano-youth',
+  },
+  {
+    id: 'loveverse-rose',
+    name: 'LoveVerse — Đóa Hồng Lồng Kính',
+    category: 'playful',
+    scene3d: 'loveverse',
+    badge3d: 'Lồng kính · Thư · Mưa yêu',
+    ribbon: 'super-hot',
+    ribbonText: 'Đúng chất',
+    createdCount: '2.480',
+    tagText: 'Giữ vân tay · Mở thư',
+    description: 'Nhấn giữ thắp sáng đóa hồng trong lồng kính, chạm để bó hoa nở giữa trời đêm, mở phong bì, xem kỷ niệm rồi bước vào mưa lời chúc.',
+    flowerType: 'rose',
+    particleType: 'hearts',
+    dark: true,
+    themeColors: {
+      bgGradient: 'radial-gradient(circle at center, #260a1b 0%, #15040e 55%, #090106 100%)',
+      primary: '#e84a7f',
+      secondary: '#ffd1e8',
+      accent: '#ffb6d5',
+      cardBg: 'rgba(38, 10, 27, 0.9)',
+      textColor: '#fff5f8',
+      petals: ['#ff8fb3', '#e84a7f', '#b81b43'],
+      center: '#ffd1dc',
+    },
+    defaultMusicId: 'piano-youth',
   }
 ];
 

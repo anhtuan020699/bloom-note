@@ -4,12 +4,9 @@ import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowLeft,
-  Box,
   Fingerprint,
   Heart,
   Lock,
-  MailOpen,
-  Orbit,
   RotateCcw,
   Share2,
   Sparkles,
@@ -21,6 +18,7 @@ import LetterCard from './LetterCard.jsx';
 import VinylButton from './VinylButton.jsx';
 import { Tilt3DWrapper } from './Tilt3D.jsx';
 import { ReferenceExperience, ReferenceMini } from './ReferenceFlows.jsx';
+import LoveVerseScene from './LoveVerseScene.jsx';
 import {
   HeartGalaxy3DStage,
   MemoryCarousel3DStage,
@@ -32,6 +30,11 @@ import { themeVars } from '../lib/theme.js';
 
 const LOCK_KEY = 'tiemhoa:locked';
 const CIRCUMFERENCE = 188.5; // 2 * PI * 30
+const SHOW_SEQUENCE = [
+  { id: 'letter', label: 'Thư tay & ảnh', ms: 11000 },
+  { id: 'carousel', label: 'Vòng quay kỷ niệm', ms: 12000 },
+  { id: 'galaxy', label: 'Vũ trụ trái tim', ms: 12000 },
+];
 
 function useFlowerSize() {
   const [size, setSize] = useState(280);
@@ -402,7 +405,7 @@ export default function GiftScene({
   const [phase, setPhase] = useState('unopened');
   const [holdProgress, setHoldProgress] = useState(0);
   const [envelopeOpen, setEnvelopeOpen] = useState(true);
-  const [view3dMode, setView3dMode] = useState('letter'); // 'letter' | 'carousel' | 'galaxy'
+  const [view3dMode, setView3dMode] = useState(SHOW_SEQUENCE[0].id);
   const [locked, setLocked] = useState(false);
   const particlesRef = useRef(null);
   const flowerRef = useRef(null);
@@ -459,6 +462,7 @@ export default function GiftScene({
     setHoldProgress(0);
     setPhase('unopened');
     window.scrollTo({ top: 0 });
+    if (!player.getState().playing) player.play(card.musicConfig);
     later(850, bloom);
   };
 
@@ -471,9 +475,30 @@ export default function GiftScene({
   };
 
   const opened = phase === 'opened';
+  const stepIndex = Math.max(0, SHOW_SEQUENCE.findIndex((step) => step.id === view3dMode));
+
+  useEffect(() => {
+    if (!opened) {
+      setView3dMode(SHOW_SEQUENCE[0].id);
+      return;
+    }
+    let index = 0;
+    let timer;
+    const advance = () => {
+      timer = setTimeout(() => {
+        index = (index + 1) % SHOW_SEQUENCE.length;
+        setView3dMode(SHOW_SEQUENCE[index].id);
+        advance();
+      }, SHOW_SEQUENCE[index].ms);
+    };
+    setView3dMode(SHOW_SEQUENCE[0].id);
+    advance();
+    return () => clearTimeout(timer);
+  }, [opened]);
   const referenceKind = ['lucky', 'matrix', 'vip'].includes(template.scene3d)
     ? template.scene3d
     : null;
+  const loveverse = template.scene3d === 'loveverse';
 
   // When unopened, blend into a deep enchanted velvet twilight backdrop like LoveVerse
   const unopenedBackdrop =
@@ -490,7 +515,7 @@ export default function GiftScene({
       className="themed relative min-h-dvh overflow-x-hidden transition-colors duration-700"
       style={{ ...themeVars(template), ...unopenedBackdrop }}
     >
-      {!referenceKind && (phase !== 'unopened' || holdProgress > 0) && (
+      {!loveverse && !referenceKind && (phase !== 'unopened' || holdProgress > 0) && (
         <ParticleCanvas
           ref={particlesRef}
           type={template.particleType}
@@ -553,7 +578,7 @@ export default function GiftScene({
       </AnimatePresence>
 
       {/* Floating Round Music Button (LoveVerse style) */}
-      {phase !== 'unopened' && card.musicConfig?.source !== 'none' && (
+      {(loveverse || phase !== 'unopened') && card.musicConfig?.source !== 'none' && (
         <motion.div
           initial={{ scale: 0, rotate: -90 }}
           animate={{ scale: 1, rotate: 0 }}
@@ -571,7 +596,9 @@ export default function GiftScene({
 
       {locked && <HoldToUnlock onUnlock={toggleLock} />}
 
-      {referenceKind ? (
+      {loveverse ? (
+        <LoveVerseScene card={card} />
+      ) : referenceKind ? (
         <ReferenceExperience kind={referenceKind} card={card} />
       ) : (
       <>
@@ -720,31 +747,21 @@ export default function GiftScene({
           ============================================================ */}
       {opened && (
         <main className="relative z-30 mx-auto flex min-h-dvh max-w-5xl flex-col items-center justify-center gap-6 px-4 pt-20 pb-32">
-          {/* Interactive 3D Space Switcher Pill Bar */}
           <motion.div
             initial={{ opacity: 0, y: -18 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-wrap items-center justify-center gap-1.5 rounded-full border border-white/30 bg-black/35 p-1.5 text-xs font-bold text-white shadow-xl backdrop-blur-xl"
+            className="flex items-center gap-3 rounded-full border border-white/25 bg-black/35 px-4 py-2 text-xs font-bold text-white shadow-xl backdrop-blur-xl"
+            aria-live="polite"
           >
-            {[
-              { id: 'letter', label: 'Thư Tay & Ảnh 3D', Icon: MailOpen },
-              { id: 'carousel', label: 'Vòng Quay Kỷ Niệm 3D 360°', Icon: Box },
-              { id: 'galaxy', label: 'Vũ Trụ Trái Tim 3D', Icon: Orbit },
-            ].map(({ id, label, Icon }) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setView3dMode(id)}
-                className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition ${
-                  view3dMode === id
-                    ? 'bg-[linear-gradient(135deg,#be123c_0%,#e11d48_50%,#a21caf_100%)] text-white shadow-md'
-                    : 'text-white/80 hover:bg-white/15 hover:text-white'
-                }`}
-              >
-                <Icon size={14} />
-                <span>{label}</span>
-              </button>
-            ))}
+            <span className="flex items-center gap-1.5" aria-hidden="true">
+              {SHOW_SEQUENCE.map((step, i) => (
+                <span
+                  key={step.id}
+                  className={`h-1.5 rounded-full transition-all ${i === stepIndex ? 'w-6 bg-white' : 'w-1.5 bg-white/35'}`}
+                />
+              ))}
+            </span>
+            <span>{stepIndex + 1}/{SHOW_SEQUENCE.length} · {SHOW_SEQUENCE[stepIndex].label}</span>
           </motion.div>
 
           {view3dMode === 'carousel' ? (
@@ -763,13 +780,6 @@ export default function GiftScene({
                   size={Math.min(360, size * 1.05)}
                 />
               </Suspense>
-              <button
-                type="button"
-                onClick={() => setView3dMode('letter')}
-                className="hg-btn-primary rounded-full px-5 py-2.5 text-xs sm:text-sm"
-              >
-                <MailOpen size={15} /> Quay lại đọc bức thư tay
-              </button>
             </motion.div>
           ) : view3dMode === 'galaxy' ? (
             <motion.div
@@ -787,13 +797,6 @@ export default function GiftScene({
                   size={Math.min(350, size)}
                 />
               </Suspense>
-              <button
-                type="button"
-                onClick={() => setView3dMode('letter')}
-                className="hg-btn-primary rounded-full px-5 py-2.5 text-xs sm:text-sm"
-              >
-                <MailOpen size={15} /> Quay lại đọc bức thư tay
-              </button>
             </motion.div>
           ) : (
             <div className="flex w-full flex-col items-center justify-center gap-8 md:flex-row md:items-center md:gap-12">
