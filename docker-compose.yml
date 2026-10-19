@@ -17,19 +17,17 @@ services:
       args:
         API_URL: http://bloomnote-api:4000
     container_name: bloomnote-web
+    ports:
+      - "5173:5173"
     depends_on:
       - api
     networks:
       - apps_shared
-      - npm
     restart: unless-stopped
 
 networks:
   apps_shared:
     external: true
-  npm:
-    external: true
-    name: nginx-proxy-manager_default
 
 volumes:
   uploads:
