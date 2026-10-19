@@ -22,10 +22,11 @@ const petalPath = (shape, L, W) => {
 const FLOWERS = {
   rose: {
     layers: [
-      { count: 6, L: 122, W: 82, shape: 'round', tone: [1, 0], offset: 0, twist: -40 },
-      { count: 5, L: 98, W: 68, shape: 'round', tone: [2, 0], offset: 36, twist: -25 },
-      { count: 5, L: 72, W: 52, shape: 'round', tone: [2, 1], offset: 12, twist: -10 },
-      { count: 4, L: 46, W: 38, shape: 'round', tone: [2, 1], offset: 55, twist: 10 },
+      { count: 8, L: 130, W: 78, shape: 'round', tone: [1, 0], offset: 0, twist: -48 },
+      { count: 7, L: 110, W: 70, shape: 'round', tone: [2, 0], offset: 22, twist: -34 },
+      { count: 6, L: 88, W: 58, shape: 'round', tone: [2, 1], offset: 10, twist: -18 },
+      { count: 5, L: 64, W: 44, shape: 'round', tone: [2, 1], offset: 38, twist: 4 },
+      { count: 5, L: 38, W: 26, shape: 'round', tone: [0, 1], offset: 16, twist: 16 },
     ],
     pistil: 'rose',
   },
@@ -46,8 +47,9 @@ const FLOWERS = {
   },
   sunflower: {
     layers: [
-      { count: 18, L: 124, W: 24, shape: 'pointed', tone: [2, 1], offset: 0, twist: -30 },
-      { count: 18, L: 106, W: 22, shape: 'pointed', tone: [1, 0], offset: 10, twist: -15 },
+      { count: 24, L: 128, W: 18, shape: 'pointed', tone: [2, 1], offset: 0, twist: -22 },
+      { count: 22, L: 112, W: 16, shape: 'pointed', tone: [1, 0], offset: 8, twist: -12 },
+      { count: 16, L: 88, W: 13, shape: 'pointed', tone: [0, 1], offset: 4, twist: 0, opacity: 0.92 },
     ],
     pistil: 'seeds',
   },
@@ -94,23 +96,35 @@ function Pistil({ kind, ids, colors, bloom, delay, dur }) {
   let content;
   if (kind === 'seeds') {
     const seeds = [];
-    for (let i = 0; i < 140; i++) {
-      const r = 3.6 * Math.sqrt(i);
+    for (let i = 0; i < 180; i++) {
+      const r = 3.35 * Math.sqrt(i);
       const a = i * 2.39996;
-      seeds.push(<circle key={i} cx={coord(r * Math.cos(a))} cy={coord(r * Math.sin(a))} r={1.9} fill="#3e2723" opacity={0.75} />);
+      seeds.push(
+        <circle
+          key={i}
+          cx={coord(r * Math.cos(a))}
+          cy={coord(r * Math.sin(a))}
+          r={i % 5 === 0 ? 2.2 : 1.7}
+          fill={i % 3 === 0 ? '#5d4037' : '#3e2723'}
+          opacity={0.82}
+        />
+      );
     }
     content = (
       <>
-        <circle r="48" fill={`url(#${ids.disk})`} />
+        <circle r="50" fill={`url(#${ids.disk})`} />
         {seeds}
-        <circle r="48" fill="none" stroke="#4e342e" strokeOpacity="0.5" strokeWidth="3" />
+        <circle r="50" fill="none" stroke="#ffe082" strokeOpacity="0.55" strokeWidth="4" />
+        <circle r="50" fill="none" stroke="#4e342e" strokeOpacity="0.4" strokeWidth="1.5" />
       </>
     );
   } else if (kind === 'rose') {
     content = (
       <>
-        <circle r="20" fill={center} />
-        <path d="M0 -2 C8 -4 9 8 0 9 C-12 10 -13 -10 0 -12 C15 -13 18 10 4 16" fill="none" stroke="#fff" strokeOpacity="0.45" strokeWidth="2.4" strokeLinecap="round" />
+        <circle r="22" fill={center} />
+        <circle r="14" fill={colors.petals?.[2] || '#be123c'} opacity="0.55" />
+        <path d="M0 0 C6 -10 14 -6 12 2 C10 12 2 14 -4 10 C-14 4 -8 -12 2 -14 C14 -16 16 4 6 14" fill="none" stroke="#fff" strokeOpacity="0.55" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M1 -1 C4 -6 8 -3 6 2 C4 8 0 8 -3 5" fill="none" stroke={colors.petals?.[0] || '#fff'} strokeOpacity="0.7" strokeWidth="1.6" strokeLinecap="round" />
       </>
     );
   } else {
@@ -212,8 +226,8 @@ function FlowerHead({ type, colors, bloom, baseDelay = 0, speed = 1, uid }) {
                   d={petalPath(layer.shape, layer.L, layer.W)}
                   fill={fill}
                   stroke="#fff"
-                  strokeOpacity="0.35"
-                  strokeWidth="1"
+                  strokeOpacity="0.28"
+                  strokeWidth="0.8"
                   style={{
                     transformBox: 'view-box',
                     transformOrigin: '0px 0px',
@@ -310,13 +324,14 @@ function Flower({ template, bloom = false, size = 320, instant = false, classNam
 
         {isBouquet && (
           <g>
-            <path d="M-110 168 L110 168 L40 262 L-40 262Z" fill={`url(#${uid}-wrap)`} stroke={colors.secondary} strokeOpacity="0.5" strokeWidth="2" />
-            <path d="M-110 168 L-40 262 M110 168 L40 262 M-60 168 L-18 262 M60 168 L18 262" stroke="#fff" strokeOpacity="0.6" strokeWidth="2" />
-            <g transform="translate(0 214)" fill={colors.primary}>
-              <path d="M0 0 C-30 -26 -48 6 0 0 C-30 26 -48 -6 0 0Z" />
-              <path d="M0 0 C30 -26 48 6 0 0 C30 26 48 -6 0 0Z" />
-              <path d="M0 0 L-16 40 L-6 36 Z M0 0 L16 40 L6 36 Z" />
-              <circle r="8" fill={colors.secondary} />
+            <path d="M-118 162 L118 162 L46 268 L-46 268Z" fill={`url(#${uid}-wrap)`} stroke={colors.secondary} strokeOpacity="0.45" strokeWidth="1.6" />
+            <path d="M-118 162 L-46 268 M118 162 L46 268 M-64 162 L-20 268 M64 162 L20 268" stroke="#fff" strokeOpacity="0.55" strokeWidth="1.6" />
+            <g transform="translate(0 216)" fill={colors.primary}>
+              <path d="M0 0 C-36 -32 -58 8 0 0 C-34 30 -56 -8 0 0Z" />
+              <path d="M0 0 C36 -32 58 8 0 0 C34 30 56 -8 0 0Z" />
+              <path d="M0 0 L-18 46 L-7 40 Z M0 0 L18 46 L7 40 Z" />
+              <circle r="9" fill={colors.secondary} />
+              <circle r="4.5" fill="#fff" opacity="0.55" />
             </g>
           </g>
         )}

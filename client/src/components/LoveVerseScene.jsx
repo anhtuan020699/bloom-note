@@ -33,11 +33,29 @@ const BOUQUET_FACE = {
 
 const HOLD_MS = 2400;
 
-const stars = Array.from({ length: 46 }, (_, i) => ({
+function useStageSize() {
+  const [size, setSize] = useState({ rose: 148, bouquet: 280 });
+  useEffect(() => {
+    const calc = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      setSize({
+        rose: Math.round(Math.min(158, w * 0.42, h * 0.22)),
+        bouquet: Math.round(Math.min(320, w * 0.78, h * 0.42)),
+      });
+    };
+    calc();
+    window.addEventListener('resize', calc);
+    return () => window.removeEventListener('resize', calc);
+  }, []);
+  return size;
+}
+
+const stars = Array.from({ length: 72 }, (_, i) => ({
   left: `${(i * 37) % 100}%`,
   top: `${(i * 17) % 62}%`,
   delay: `${(i % 7) * 0.35}s`,
-  size: 1.5 + (i % 3),
+  size: 1.2 + (i % 4) * 0.7,
 }));
 
 const flies = Array.from({ length: 10 }, (_, i) => ({
@@ -76,6 +94,7 @@ function galleryOf(card) {
 function NightSky() {
   return (
     <>
+      <div className={styles.milky} aria-hidden="true" />
       <div className={styles.moon} aria-hidden="true" />
       <div className={styles.hills} aria-hidden="true" />
       <div className={styles.stars} aria-hidden="true">
@@ -108,7 +127,7 @@ function NameBurst({ text }) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, w, h);
     ctx.fillStyle = '#fff';
-    ctx.font = `${text.length > 18 ? 42 : 64}px "Playfair Display", Georgia, serif`;
+    ctx.font = `${text.length > 18 ? Math.min(36, w / 14) : Math.min(58, w / 9)}px "Playfair Display", Georgia, serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(text, w / 2, h / 2);
@@ -156,6 +175,7 @@ export default function LoveVerseScene({ card }) {
   const items = useMemo(() => galleryOf(card), [card]);
   const wishes = useMemo(() => wishesOf(card), [card]);
   const name = card?.recipientName?.trim() || 'For you';
+  const sizes = useStageSize();
 
   useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
 
@@ -266,7 +286,7 @@ export default function LoveVerseScene({ card }) {
               <span className={styles.knob} />
               <span className={styles.knobNeck} />
               <span className={styles.flowerIn}>
-                <Flower template={ROSE_FACE} bloom glow={lit} size={158} instant />
+                <Flower template={ROSE_FACE} bloom glow={lit} size={sizes.rose} instant />
               </span>
               <span className={styles.spark} style={{ left: '22%', top: '28%' }} />
               <span className={styles.spark} style={{ left: '70%', top: '36%', animationDelay: '0.7s' }} />
@@ -325,7 +345,7 @@ export default function LoveVerseScene({ card }) {
           <NightSky />
           {!bouquetIn && <NameBurst text={name} />}
           <div className={`${styles.bouquet} ${bouquetIn ? styles.bouquetIn : ''}`}>
-            <Flower template={BOUQUET_FACE} bloom size={320} glow={false} instant />
+            <Flower template={BOUQUET_FACE} bloom size={sizes.bouquet} glow={false} instant />
           </div>
           <button
             type="button"

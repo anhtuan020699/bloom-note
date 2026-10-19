@@ -221,20 +221,21 @@ function LuckyChance({ card }) {
             style={{ left: `${12 + i * 14}%`, top: `${18 + (i % 3) * 22}%`, animationDelay: `${i * 0.25}s` }}
           />
         ))}
-        <div className="relative z-10 flex flex-col items-center px-6">
-          <p className="rf-lora text-xs tracking-[0.28em] text-emerald-100/80 italic">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[32%] bg-[radial-gradient(ellipse_at_18%_110%,#14532d_0%,transparent_58%),radial-gradient(ellipse_at_78%_120%,#052e16_0%,transparent_62%)]" />
+        <div className="relative z-10 flex flex-col items-center px-5">
+          <p className="rf-lora text-[11px] tracking-[0.32em] text-emerald-100/80 italic sm:text-xs">
             LUCKY CHANCE
           </p>
-          <h1 className="mt-3 rf-lora text-3xl text-white sm:text-5xl">
+          <h1 className="mt-3 rf-lora text-[1.7rem] text-white sm:text-5xl">
             Gửi may mắn đến
           </h1>
-          <p className="mt-1 rf-script text-5xl text-[#a7f3d0] sm:text-6xl">
+          <p className="mt-1 rf-script text-4xl text-[#a7f3d0] sm:text-6xl">
             {nameOf(card)}
           </p>
           <SceneForm
             pathname={pathname}
             ariaLabel="Chạm cỏ may mắn để bắt đầu"
-            buttonClassName="rf-clover mt-8 grid h-36 w-36 place-items-center rounded-full"
+            buttonClassName="rf-clover mt-8 grid h-28 w-28 place-items-center rounded-full sm:h-36 sm:w-36"
           >
             <CloverIcon />
           </SceneForm>
@@ -256,7 +257,7 @@ function LuckyChance({ card }) {
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-emerald-900/80 to-transparent" />
       <p className="pointer-events-none absolute top-4 left-1/2 z-20 -translate-x-1/2 text-center text-xs text-emerald-100/80">
-        Kéo để nghiêng không gian · lăn chuột để phóng to
+        Kéo để nghiêng không gian
       </p>
       <div
         ref={layerRef}

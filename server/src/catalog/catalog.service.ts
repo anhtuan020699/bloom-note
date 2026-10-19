@@ -29,7 +29,7 @@ export class CatalogService implements OnModuleInit {
       await this.prisma.template.upsert({
         where: { id: t.id },
         create: { id: t.id, payload: t },
-        update: {},
+        update: { payload: t },
       });
     }
     for (const m of MUSIC_LIBRARY) {

@@ -10,8 +10,12 @@ export default function LetterCard({ card, typing = false, compact = false, foot
 
   return (
     <article
-      className={`relative overflow-hidden rounded-[26px] border border-white/60 shadow-[0_24px_60px_rgba(0,0,0,0.18)] backdrop-blur-md ${compact ? 'p-5' : 'p-6 sm:p-9'}`}
-      style={{ background: 'var(--card-bg)', color: 'var(--text)' }}
+      className={`relative overflow-hidden rounded-[26px] border border-white/70 shadow-[0_24px_60px_rgba(0,0,0,0.18)] backdrop-blur-md ${compact ? 'p-5' : 'p-5 sm:p-9'}`}
+      style={{
+        background:
+          'linear-gradient(180deg, color-mix(in srgb, var(--card-bg) 92%, white) 0%, var(--card-bg) 100%)',
+        color: 'var(--text)',
+      }}
       onClick={() => typing && !done && setSkip(true)}
     >
       <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-30 blur-2xl" style={{ background: 'var(--secondary)' }} />
@@ -19,7 +23,7 @@ export default function LetterCard({ card, typing = false, compact = false, foot
 
       <header className="relative">
         <p className="text-[11px] font-semibold uppercase tracking-[0.25em] opacity-60">Ngày Phụ nữ Việt Nam · 20/10/{year}</p>
-        <h2 className={`shimmer-text mt-2 font-display font-bold leading-tight ${compact ? 'text-2xl' : 'text-3xl sm:text-4xl'}`}>
+        <h2 className={`shimmer-text mt-2 font-display font-bold leading-tight ${compact ? 'text-2xl' : 'text-[1.65rem] sm:text-4xl'}`}>
           Gửi {card.recipientName || 'cô bạn xinh đẹp'}
         </h2>
         <div className="mt-3 flex items-center gap-2 opacity-60" aria-hidden="true">

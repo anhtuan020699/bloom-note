@@ -841,8 +841,8 @@ export const SurpriseGiftBox3DStage = memo(function SurpriseGiftBox3DStage({
         onClick ? 'cursor-pointer' : ''
       }`}
       style={{
-        width: mini ? '100%' : Math.max(300, size * 1.2),
-        height: mini ? '100%' : Math.max(340, size * 1.22),
+        width: mini ? '100%' : Math.min(size * 1.12, 420),
+        height: mini ? '100%' : Math.min(size * 1.18, 440),
         perspective: '1200px',
       }}
     >
@@ -929,7 +929,7 @@ export const SurpriseGiftBox3DStage = memo(function SurpriseGiftBox3DStage({
         <div className="pointer-events-none mt-4">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-300/40 bg-white/80 px-3.5 py-1 text-[11px] font-bold text-rose-800 shadow-xs backdrop-blur-md">
             <Sparkles size={12} className="text-rose-600" />
-            Hộp Quà 3D 6 Mặt · Chạm hoặc nhấn giữ để mở nắp hộp!
+            Chạm để mở hộp quà 3D
           </span>
         </div>
       )}

@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowLeft,
   Fingerprint,
-  Heart,
   Lock,
   RotateCcw,
   Share2,
@@ -37,14 +36,14 @@ const SHOW_SEQUENCE = [
 ];
 
 function useFlowerSize() {
-  const [size, setSize] = useState(280);
+  const [size, setSize] = useState(260);
   useEffect(() => {
     const calc = () =>
       Math.round(
         Math.min(
-          window.innerWidth * 0.8,
-          window.innerHeight * 0.56 * (350 / 430),
-          380
+          window.innerWidth * 0.72,
+          window.innerHeight * 0.42 * (350 / 430),
+          360
         )
       );
     setSize(calc());
@@ -53,6 +52,27 @@ function useFlowerSize() {
     return () => window.removeEventListener('resize', onResize);
   }, []);
   return size;
+}
+
+function unopenedBackdrop(template) {
+  if (template.flowerType === 'sunflower') {
+    return {
+      background:
+        'radial-gradient(ellipse at 50% 18%, #fff8dc 0%, #ffd56a 34%, #f08a2a 68%, #5c2a08 100%)',
+      color: '#4e2a04',
+    };
+  }
+  if (!template.dark) {
+    return {
+      background:
+        'radial-gradient(ellipse at 50% 8%, #fff5fb 0%, #fbcfe8 26%, #c4b5fd 62%, #1e1b4b 100%)',
+      color: '#2d2350',
+    };
+  }
+  return {
+    background: 'radial-gradient(circle at 50% 42%, #3a0d28 0%, #1d0614 55%, #0b0208 100%)',
+    color: '#fff5f8',
+  };
 }
 
 function HoldToUnlock({ onUnlock }) {
@@ -108,6 +128,7 @@ function HoldToUnlock({ onUnlock }) {
 function GlassClocheChamber({ template, progress, bloom, size, onClick }) {
   const brightness = 0.72 + progress * 0.45;
   const saturate = 0.85 + progress * 0.4;
+  const halo = template.themeColors?.primary || '#e11d48';
 
   return (
     <div
@@ -122,14 +143,12 @@ function GlassClocheChamber({ template, progress, bloom, size, onClick }) {
         transition: 'filter 0.2s ease-out',
       }}
     >
-      {/* Magical Rose Halo Behind Glass */}
       <div
         className="pointer-events-none absolute top-1/2 left-1/2 -z-10 h-[360px] w-[280px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl transition-all duration-300"
         style={{
           opacity: 0.22 + progress * 0.78,
           transform: `translate(-50%, -50%) scale(${(0.82 + progress * 0.38).toFixed(2)})`,
-          background:
-            'radial-gradient(ellipse at 50% 50%, rgba(255,105,180,0.55) 0%, rgba(244,63,94,0.32) 40%, rgba(162,28,175,0.16) 68%, transparent 85%)',
+          background: `radial-gradient(ellipse at 50% 50%, ${halo}99 0%, ${halo}55 40%, transparent 78%)`,
         }}
       />
 
@@ -500,20 +519,13 @@ export default function GiftScene({
     : null;
   const loveverse = template.scene3d === 'loveverse';
 
-  // When unopened, blend into a deep enchanted velvet twilight backdrop like LoveVerse
-  const unopenedBackdrop =
-    phase === 'unopened'
-      ? {
-          background:
-            'radial-gradient(circle at 50% 42%, #3a0d28 0%, #1d0614 55%, #0b0208 100%)',
-          color: '#fff5f8',
-        }
-      : {};
+  const introLook = phase === 'unopened' ? unopenedBackdrop(template) : {};
+  const introLight = phase === 'unopened' && !template.dark;
 
   return (
     <div
       className="themed relative min-h-dvh overflow-x-hidden transition-colors duration-700"
-      style={{ ...themeVars(template), ...unopenedBackdrop }}
+      style={{ ...themeVars(template), ...introLook }}
     >
       {!loveverse && !referenceKind && (phase !== 'unopened' || holdProgress > 0) && (
         <ParticleCanvas
@@ -531,7 +543,8 @@ export default function GiftScene({
             initial={false}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -60, opacity: 0 }}
-            className="fixed inset-x-0 top-0 z-40 flex flex-wrap items-center gap-2 p-3 sm:p-4"
+            className="fixed inset-x-0 top-0 z-40 flex max-w-[calc(100%-4.75rem)] flex-wrap items-center gap-2 px-3 py-3 sm:max-w-none sm:p-4"
+            style={{ paddingTop: 'max(12px, env(safe-area-inset-top))' }}
           >
             {(backHref || onBack) && (
               backHref ? (
@@ -582,7 +595,7 @@ export default function GiftScene({
         <motion.div
           initial={{ scale: 0, rotate: -90 }}
           animate={{ scale: 1, rotate: 0 }}
-          className="fixed top-3 right-3 z-40 sm:top-4 sm:right-5"
+          className="fixed top-[max(12px,env(safe-area-inset-top))] right-3 z-40 sm:top-4 sm:right-5"
         >
           <VinylButton music={card.musicConfig} />
         </motion.div>
@@ -605,7 +618,7 @@ export default function GiftScene({
       {/* ============================================================
           STAGE 1 & 2: ENCHANTED CLOCHE + BLOOMING FLOWER
           ============================================================ */}
-      <div className="pointer-events-none fixed inset-0 z-10 flex flex-col items-center justify-center px-4">
+      <div className="pointer-events-none fixed inset-0 z-10 flex flex-col items-center justify-center px-4 pt-24 pb-6 sm:pt-28">
         <AnimatePresence>
           {phase === 'unopened' && (
             <motion.div
@@ -616,10 +629,16 @@ export default function GiftScene({
               transition={{ duration: 0.7 }}
               className="mb-3 text-center"
             >
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-pink-300/30 bg-white/10 px-3.5 py-1 text-[11px] font-bold tracking-[0.22em] text-pink-200 uppercase backdrop-blur-md">
+              <span className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1 text-[11px] font-bold tracking-[0.22em] uppercase backdrop-blur-md ${
+                introLight
+                  ? 'border-black/10 bg-white/55 text-[var(--text)]'
+                  : 'border-pink-300/30 bg-white/10 text-pink-200'
+              }`}>
                 <Sparkles size={12} /> BloomNote · Quà tặng 20/10
               </span>
-              <h1 className="mt-2.5 font-display text-2xl font-bold text-white drop-shadow-[0_2px_16px_rgba(244,114,182,0.65)] sm:text-4xl">
+              <h1 className={`mt-2.5 font-display text-[1.45rem] font-bold drop-shadow-[0_2px_16px_rgba(0,0,0,0.28)] sm:text-4xl ${
+                introLight ? 'text-[var(--text)]' : 'text-white'
+              }`}>
                 Dành tặng {card.recipientName || 'cô bạn xinh đẹp'}
               </h1>
             </motion.div>
@@ -746,7 +765,7 @@ export default function GiftScene({
           STAGE 3: OPENED LETTER & INTERACTIVE 3D EXPERIENCE
           ============================================================ */}
       {opened && (
-        <main className="relative z-30 mx-auto flex min-h-dvh max-w-5xl flex-col items-center justify-center gap-6 px-4 pt-20 pb-32">
+        <main className="relative z-30 mx-auto flex min-h-dvh max-w-5xl flex-col items-center justify-center gap-5 px-3 pt-[max(5.5rem,calc(env(safe-area-inset-top)+4.5rem))] pb-[max(5rem,calc(env(safe-area-inset-bottom)+3rem))] sm:gap-6 sm:px-4">
           <motion.div
             initial={{ opacity: 0, y: -18 }}
             animate={{ opacity: 1, y: 0 }}
@@ -866,30 +885,17 @@ export default function GiftScene({
                       card={card}
                       typing
                       footer={
-                        <div className="flex flex-wrap items-center gap-2.5">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              replay();
-                            }}
-                            className="hg-btn-primary rounded-full px-5 py-2.5 text-sm"
-                          >
-                            <RotateCcw size={15} />
-                            <span>Xem lại hiệu ứng 3D</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEnvelopeOpen(false);
-                            }}
-                            className="hg-btn-preview rounded-full px-4 py-2.5 text-xs"
-                          >
-                            <Heart size={14} className="fill-current" />
-                            <span>Gập vào phong bì</span>
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            replay();
+                          }}
+                          className="hg-btn-primary rounded-full px-5 py-2.5 text-sm"
+                        >
+                          <RotateCcw size={15} />
+                          <span>Xem lại</span>
+                        </button>
                       }
                     />
                   </Tilt3DWrapper>
