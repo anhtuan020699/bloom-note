@@ -1,0 +1,35 @@
+services:
+  api:
+    build: ./server
+    container_name: bloomnote-api
+    environment:
+      DATABASE_URL: postgres://bloomnote:${POSTGRES_PASSWORD}@shared-postgres:5432/bloomnote
+      PORT: "4000"
+    volumes:
+      - uploads:/app/uploads
+    networks:
+      - apps_shared
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./client
+      args:
+        API_URL: http://bloomnote-api:4000
+    container_name: bloomnote-web
+    depends_on:
+      - api
+    networks:
+      - apps_shared
+      - npm
+    restart: unless-stopped
+
+networks:
+  apps_shared:
+    external: true
+  npm:
+    external: true
+    name: nginx-proxy-manager_default
+
+volumes:
+  uploads:
