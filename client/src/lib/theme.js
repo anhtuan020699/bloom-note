@@ -12,7 +12,7 @@ export const themeVars = (template) => {
 };
 
 export const DEFAULT_CARD = {
-  templateId: 'pastel-rose',
+  templateId: 'class-bouquet',
   recipientName: '',
   senderName: '',
   message: '',

@@ -76,6 +76,7 @@ const FLOWERS = {
 };
 
 const normAngle = (a) => ((((a + 180) % 360) + 360) % 360) - 180;
+const coord = (n) => Math.round(n * 1e4) / 1e4;
 
 const BUD_SPREAD = 0.1;
 
@@ -96,7 +97,7 @@ function Pistil({ kind, ids, colors, bloom, delay, dur }) {
     for (let i = 0; i < 140; i++) {
       const r = 3.6 * Math.sqrt(i);
       const a = i * 2.39996;
-      seeds.push(<circle key={i} cx={r * Math.cos(a)} cy={r * Math.sin(a)} r={1.9} fill="#3e2723" opacity={0.75} />);
+      seeds.push(<circle key={i} cx={coord(r * Math.cos(a))} cy={coord(r * Math.sin(a))} r={1.9} fill="#3e2723" opacity={0.75} />);
     }
     content = (
       <>
@@ -122,8 +123,8 @@ function Pistil({ kind, ids, colors, bloom, delay, dur }) {
           const len = (kind === 'stamens' ? 28 : 22) + (i % 3) * 5;
           return (
             <g key={i}>
-              <line x1="0" y1="0" x2={Math.cos(a) * len} y2={Math.sin(a) * len} stroke={kind === 'stamens' ? center : '#c79100'} strokeWidth="1.6" strokeOpacity="0.85" />
-              <circle cx={Math.cos(a) * len} cy={Math.sin(a) * len} r="3.4" fill={gold} />
+              <line x1="0" y1="0" x2={coord(Math.cos(a) * len)} y2={coord(Math.sin(a) * len)} stroke={kind === 'stamens' ? center : '#c79100'} strokeWidth="1.6" strokeOpacity="0.85" />
+              <circle cx={coord(Math.cos(a) * len)} cy={coord(Math.sin(a) * len)} r="3.4" fill={gold} />
             </g>
           );
         })}
@@ -157,7 +158,7 @@ function FlowerHead({ type, colors, bloom, baseDelay = 0, speed = 1, uid }) {
           </linearGradient>
         ))}
         {palette.map((c, i) => (
-          <linearGradient key={c + i} id={ids.multi(i)} x1="0" y1="1" x2="0" y2="0">
+          <linearGradient key={i} id={ids.multi(i)} x1="0" y1="1" x2="0" y2="0">
             <stop offset="0" stopColor={c} />
             <stop offset="0.65" stopColor={c} />
             <stop offset="1" style={{ stopColor: `color-mix(in srgb, ${c} 45%, white)` }} />
@@ -294,7 +295,10 @@ function Flower({ template, bloom = false, size = 320, instant = false, classNam
             <g key={i} transform={`translate(${s.x} ${s.y}) scale(${s.s})`}>
               <FlowerHead
                 type={s.type}
-                colors={{ ...colors, petals: [colors.petals[(i + 1) % 5], colors.petals[(i + 2) % 5], colors.petals[(i + 3) % 5]] }}
+                colors={{
+                  ...colors,
+                  petals: [1, 2, 3].map((offset) => colors.petals[(i + offset) % colors.petals.length]),
+                }}
                 bloom={bloom}
                 baseDelay={s.delay}
                 uid={`${uid}-s${i}`}

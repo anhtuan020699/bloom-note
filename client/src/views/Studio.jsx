@@ -63,18 +63,11 @@ export default function Studio() {
   const urlTemplate = params.get('template');
   const savedSlug = params.get('saved');
   const formError = params.get('error');
-  const [form, setForm] = useState(() => {
-    let base = { ...DEFAULT_CARD };
-    try {
-      const saved = JSON.parse(localStorage.getItem(DRAFT_KEY));
-      if (saved?.form) base = pickFields(saved.form);
-    } catch { /* ignore */ }
-    if (urlTemplate) base = { ...base, templateId: urlTemplate };
-    return base;
-  });
-  const [editingId, setEditingId] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(DRAFT_KEY))?.editingId || null; } catch { return null; }
-  });
+  const [form, setForm] = useState(() => (
+    urlTemplate ? { ...DEFAULT_CARD, templateId: urlTemplate } : { ...DEFAULT_CARD }
+  ));
+  const [editingId, setEditingId] = useState(null);
+  const [draftReady, setDraftReady] = useState(false);
   const [musicTab, setMusicTab] = useState(form.musicConfig.source === 'library' || form.musicConfig.source === 'none' ? 'library' : 'custom');
   const [musicTouched, setMusicTouched] = useState(false);
   const [photoUrlInput, setPhotoUrlInput] = useState('');
@@ -125,13 +118,29 @@ export default function Studio() {
   }, [musicTouched, templates]);
 
   useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(DRAFT_KEY));
+      if (saved?.form) {
+        const next = pickFields(saved.form);
+        if (urlTemplate) next.templateId = urlTemplate;
+        setForm(next);
+        setMusicTab(next.musicConfig?.source === 'upload' || next.musicConfig?.source === 'url' ? 'custom' : 'library');
+        setMusicUrlInput(next.musicConfig?.source === 'url' ? next.musicConfig.url : '');
+      }
+      if (saved?.editingId) setEditingId(saved.editingId);
+    } catch { /* ignore */ }
+    setDraftReady(true);
+  }, [urlTemplate]);
+
+  useEffect(() => {
     const t = params.get('template');
     if (t) chooseTemplate(t);
   }, [params]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    if (!draftReady) return;
     localStorage.setItem(DRAFT_KEY, JSON.stringify({ form, editingId }));
-  }, [form, editingId]);
+  }, [form, editingId, draftReady]);
 
   const loadCards = useCallback(() => {
     setLoadingCards(true);

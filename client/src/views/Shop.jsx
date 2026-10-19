@@ -301,7 +301,7 @@ function TemplateCard({ t, index, lang }) {
               className="hg-btn-preview rounded-xl py-2.5 text-[13px]"
             >
               <Eye size={15} />
-              <span>{lang === 'en' ? 'Preview 3D' : 'Xem trước 3D'}</span>
+              <span>{lang === 'en' ? 'Preview' : 'Xem trước'}</span>
             </a>
             <a
               href={`/studio?template=${t.id}`}
@@ -643,7 +643,7 @@ const FAQ_ITEMS = [
       <div className="space-y-2 text-sm leading-relaxed text-[#6f5965]">
         <p>Bạn có thể tạo website quà tặng chỉ qua 4 bước đơn giản:</p>
         <ol className="list-decimal space-y-1.5 pl-5">
-          <li><strong className="text-[#2a1f27]">Chọn mẫu web:</strong> Khám phá bộ sưu tập 6 mẫu hoa, bấm <em>Xem trước</em> hoặc <em>Tạo mẫu này</em>.</li>
+          <li><strong className="text-[#2a1f27]">Chọn mẫu web:</strong> Khám phá bộ sưu tập mẫu hoa 20/10, bấm <em>Xem trước</em> hoặc <em>Tạo mẫu này</em>.</li>
           <li><strong className="text-[#2a1f27]">Tùy chỉnh thông tin:</strong> Điền tên người nhận, người gửi, chọn gợi ý lời chúc, tải ảnh kỷ niệm và chọn bài hát nền.</li>
           <li><strong className="text-[#2a1f27]">Lưu &amp; Tạo Link:</strong> Hệ thống lưu thiệp vào danh sách lớp và tạo ngay đường link kèm mã QR.</li>
           <li><strong className="text-[#2a1f27]">Gửi trao:</strong> Gửi link hoặc in mã QR đính kèm bó hoa/quà tặng cho các bạn nữ trong lớp.</li>
